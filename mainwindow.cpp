@@ -1,5 +1,4 @@
 #include "mainwindow.h"
-#include "coolmd.h"
 #include "./ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -15,21 +14,22 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
-void MainWindow::on_textBrowser_intoHTML()
-{
-    QString qstr = ui->textEdit->toPlainText();
-    QByteArray byteArray = qstr.toUtf8();
-    char* cstr = byteArray.data();
-    QString html = QString(compile(cstr));
-    ui->textBrowser->setHtml(html);
-}
-
-
 void MainWindow::onTextChanged()
 {
-    QString qstr = ui->textEdit->toPlainText();
-    QByteArray byteArray = qstr.toUtf8();
-    char* cstr = byteArray.data();
-    QString html = QString(compile(cstr));
-    ui->textBrowser->setHtml(html);
+    disconnect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
+    QString html = ui->textEdit->toPlainText();
+    ui->textEdit->setHtml(html);
+    connect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
 }
+
+
+
+// void MainWindow::onTextChanged()
+// {
+//     ui->textEdit->setHtml(ui->textEdit->toHtml());
+//     // QString qstr = ui->textEdit->toPlainText();
+//     // QByteArray byteArray = qstr.toUtf8();
+//     // char* cstr = byteArray.data();
+//     // QString html = QString(compile(cstr));
+//     // ui->textBrowser->setHtml(html);
+// }

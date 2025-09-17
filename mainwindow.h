@@ -18,7 +18,7 @@ public:
     ~MainWindow();
 
 private slots:
-    void on_textBrowser_intoHTML();
+    // void on_textBrowser_intoHTML();
     void onTextChanged();
 
 private:

@@ -6,6 +6,7 @@
 #include <QLabel>
 #include <string>
 #include <sstream>
+#include <map>
 CoolTextEdit::CoolTextEdit() {}
 
 int CoolTextEdit::getLineNumber(){
@@ -16,11 +17,11 @@ int CoolTextEdit::getLineNumber(){
     return block.blockNumber();
 }
 
-void CoolTextEdit::refreshWidget(){
-    int lineNum = this->getLineNumber();
-    std::string content = this->toPlainText().toStdString();
-    std::istringstream iss(content);
+
+std::pair<std::string, std::string> excludeLines(std::string content, int lineNum)
+{
     int n = 0;
+    std::istringstream iss(content);
     std::string editedLine;
     std::string rest;
     for(std::string line; std::getline(iss, line);)
@@ -34,5 +35,14 @@ void CoolTextEdit::refreshWidget(){
         }
         n++;
     }
+    return {editedLine, rest};
+}
+void CoolTextEdit::refreshWidget(){
+    int lineNum = this->getLineNumber();
+    std::string content = this->toPlainText().toStdString();
+    std::pair<std::string, std::string> result = excludeLines(content, lineNum);
+    std::string editedLine = result.first;
+    std::string rest = result.second;
+
 
 }
