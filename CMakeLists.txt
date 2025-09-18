@@ -8,6 +8,8 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g -O0")
+set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g -O0")
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Widgets)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Widgets)
@@ -18,6 +20,8 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        cooltextedit.cpp
+        cooltextedit.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -80,6 +84,9 @@ install(TARGETS CoolMDEditor
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+
+
+target_include_directories(CoolMDEditor PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
 if(QT_VERSION_MAJOR EQUAL 6)
     qt_finalize_executable(CoolMDEditor)

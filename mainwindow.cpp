@@ -24,6 +24,7 @@ void MainWindow::onTextChanged()
     char* cstr = byteArray.data();
     QString html = QString(compile(cstr));
     ui->textEdit->setHtml(html);
+    QString tempText = ui->textEdit->document()->toRawText();
     connect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
 }
 

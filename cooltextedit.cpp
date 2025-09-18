@@ -6,8 +6,12 @@
 #include <QLabel>
 #include <string>
 #include <sstream>
-#include <map>
 CoolTextEdit::CoolTextEdit() {}
+
+CoolTextEdit::CoolTextEdit(QWidget *parent)
+    : QTextEdit(parent)
+{
+}
 
 int CoolTextEdit::getLineNumber(){
     QTextCursor cursor = this->textCursor();
@@ -17,6 +21,26 @@ int CoolTextEdit::getLineNumber(){
     return block.blockNumber();
 }
 
+
+// std::pair<std::string, std::string> excludeLines(std::string content, int lineNum)
+// {
+//     int n = 0;
+//     std::istringstream iss(content);
+//     std::string editedLine;
+//     std::string rest;
+//     for(std::string line; std::getline(iss, line);)
+//     {
+//         if(n == lineNum)
+//         {
+//             editedLine = line;
+//         }
+//         else{
+//             rest += line;
+//         }
+//         n++;
+//     }
+//     return {editedLine, rest};
+// }
 
 std::pair<std::string, std::string> excludeLines(std::string content, int lineNum)
 {
@@ -28,11 +52,10 @@ std::pair<std::string, std::string> excludeLines(std::string content, int lineNu
     {
         if(n == lineNum)
         {
-            editedLine = line;
+            line = '`' + line + '`';
         }
-        else{
-            rest += line;
-        }
+        //TODO MAKE THIS BETTER
+        rest += line;
         n++;
     }
     return {editedLine, rest};

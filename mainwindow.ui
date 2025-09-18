@@ -14,7 +14,7 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="QTextEdit" name="textEdit">
+   <widget class="CoolTextEdit" name="textEdit">
     <property name="geometry">
      <rect>
       <x>50</x>
@@ -50,6 +50,13 @@
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>CoolTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header location="global">cooltextedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>
