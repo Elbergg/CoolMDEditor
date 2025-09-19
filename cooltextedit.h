@@ -10,11 +10,12 @@ class CoolTextEdit : public QTextEdit
     Q_OBJECT
 
 public:
-    QString sourceText;
+    QString oldContent;
+    QString newContent;
     explicit CoolTextEdit(QWidget* parent = nullptr);
     int getLineNumber();
     void refreshWidget();
-    std::pair<int, int> selectEditedText();
+    std::pair<int, int> selectEditedText(std::string&);
     CoolTextEdit();
 };
 
