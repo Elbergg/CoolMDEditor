@@ -23,27 +23,7 @@ int CoolTextEdit::getLineNumber(){
 }
 
 
-// std::pair<std::string, std::string> excludeLines(std::string content, int lineNum)
-// {
-//     int n = 0;
-//     std::istringstream iss(content);
-//     std::string editedLine;
-//     std::string rest;
-//     for(std::string line; std::getline(iss, line);)
-//     {
-//         if(n == lineNum)
-//         {
-//             editedLine = line;
-//         }
-//         else{
-//             rest += line;
-//         }
-//         n++;
-//     }
-//     return {editedLine, rest};
-// }
-
-std::pair<std::string, std::string> excludeLines(const std::string& content, int lineNum)
+std::pair<std::string, std::string> excludeLines(std::string& content, int lineNum)
 {
     int n = 0;
     std::istringstream iss(content);
@@ -53,14 +33,37 @@ std::pair<std::string, std::string> excludeLines(const std::string& content, int
     {
         if(n == lineNum)
         {
-            line = '`' + line + '`';
+            editedLine = line;
+            editedLine += '\n';
         }
-        //TODO MAKE THIS BETTER
-        rest += line;
+        else{
+            rest += line;
+            rest += "\n";
+        }
         n++;
     }
+    //TODO MAKE THIS BETTER!!!
     return {editedLine, rest};
 }
+
+// std::pair<std::string, std::string> excludeLines(const std::string& content, int lineNum)
+// {
+//     int n = 0;
+//     std::istringstream iss(content);
+//     std::string editedLine;
+//     std::string rest;
+//     for(std::string line; std::getline(iss, line);)
+//     {
+//         if(n == lineNum)
+//         {
+//             line = '`' + line + '`';
+//         }
+//         //TODO MAKE THIS BETTER
+//         rest += line;
+//         n++;
+//     }
+//     return {editedLine, rest};
+// }
 
 void debugTextEdit(CoolTextEdit* edit) {
     qDebug() << "=== QTextEdit Debug Info ===";
@@ -78,37 +81,57 @@ void debugTextEdit(CoolTextEdit* edit) {
     qDebug() << edit->sourceText;
 }
 
-std::pair<int, int> CoolTextEdit::selectEditedText() {
-    QTextCursor cursor = this->textCursor();
-    int pos = cursor.position();
-    std::string content = this->toPlainText().toStdString();
-    int start = pos -1;
-    while (content[start] != '\n' && start != -1) {
-        start--;
+
+// std::pair<int, int> CoolTextEdit::selectEditedText() {
+//     int lineNum = this->getLineNumber();
+//     int i = 0;
+//     std::string content = this->toPlainText().toStdString();
+//
+//
+// }
+
+
+QString merge(std::string& rest, std::string& editedLine, int lineNum) {
+    int n = 0;
+    std::istringstream iss(rest);
+    std::string result;
+    for(std::string line; std::getline(iss, line);)
+    {
+        if(n == lineNum)
+        {
+            result += editedLine;
+        }
+        else{
+            result += line;
+        }
+        n++;
     }
-    int end = pos;
-    while (content[end] != '\n' && end != this->toPlainText().length()) {
-        end++;
+    if(n == lineNum)
+    {
+        result += editedLine;
     }
-    return {start + 1, end};
+    return QString::fromStdString(result);
 }
+
 
 
 void CoolTextEdit::refreshWidget(){
     int lineNum = this->getLineNumber();
     std::string content = this->toPlainText().toStdString();
     std::pair<std::string, std::string> result = excludeLines(content, lineNum);
-    // std::string editedLine = result.first;
-    // std::string rest = result.second;
-    std::pair<int, int> textCords = selectEditedText();
-    std::string editedLine = content.substr(textCords.first, textCords.second-textCords.first);
+    std::string editedLine = result.first;
+    std::string rest = result.second;
+    // std::pair<int, int> textCords = selectEditedText();
+    // std::string editedLine = content.substr(textCords.first, textCords.second-textCords.first);
     debugTextEdit(this);
-    const QString qstr = this->toPlainText();
-    sourceText = qstr;
-    QByteArray byteArray = qstr.toUtf8();
-    char* cstr = byteArray.data();
+    // const QString qstr = this->toPlainText();
+    // sourceText = qstr;
+    // QByteArray byteArray = qstr.toUtf8();
+    const char* cstr = rest.c_str();
     QString html = QString(compile(cstr));
-    setHtml(html);
+    rest = html.toStdString();
+    QString merged = merge(rest, editedLine, lineNum);
+    setHtml(merged);
 
 
 }
