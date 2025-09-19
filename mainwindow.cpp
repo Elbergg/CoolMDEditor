@@ -17,14 +17,15 @@ MainWindow::~MainWindow()
 void MainWindow::onTextChanged()
 {
     disconnect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
+    ui->textEdit->refreshWidget();
     // QString html = ui->textEdit->toPlainText();
     // ui->textEdit->setHtml(html);
-    QString qstr = ui->textEdit->toPlainText();
-    QByteArray byteArray = qstr.toUtf8();
-    char* cstr = byteArray.data();
-    QString html = QString(compile(cstr));
-    ui->textEdit->setHtml(html);
-    QString tempText = ui->textEdit->document()->toRawText();
+    // QString qstr = ui->textEdit->toPlainText();
+    // QByteArray byteArray = qstr.toUtf8();
+    // char* cstr = byteArray.data();
+    // QString html = QString(compile(cstr));
+    // ui->textEdit->setHtml(html);
+    // QString tempText = ui->textEdit->document()->toRawText();
     connect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
 }
 
