@@ -123,29 +123,54 @@ QString merge(std::string& rest, std::string& editedLine, int lineNum) {
 
 
 
-void CoolTextEdit::refreshWidget(){
-    int lineNum = this->getLineNumber();
-    std::string content = this->toPlainText().toStdString();
-    std::pair<std::string, std::string> result = excludeLines(content, lineNum);
-    // std::string editedLine = result.first;
-    // std::string rest = result.second;
-    std::string oldTempContent = oldContent.toStdString();
-    std::pair<int, int> textCords = selectEditedText(oldTempContent);
-    std::string editedLine = content.substr(textCords.first, textCords.second-textCords.first-1);
-    std::string before = content.substr(0, textCords.first);
-    std::string after = content.substr(textCords.second, content.length());
-    debugTextEdit(this);
-    const char* cstr = before.c_str();
-    QString html = QString(compile(cstr));
-    before = html.toStdString();
-    cstr = after.c_str();
-    html = QString(compile(cstr));
-    after = html.toStdString();
-    textCords = selectEditedText(content);
-    std::string newLine = content.substr(textCords.first, textCords.second-textCords.first-1);
-    oldContent = QString::fromStdString(before + newLine + after);
-    std::string merged = before + "<p>" + editedLine + "</p>" + after;
-    setHtml(QString::fromStdString(merged));
+// void CoolTextEdit::refreshWidget(){
+//     int lineNum = this->getLineNumber();
+//     std::string content = this->toPlainText().toStdString();
+//     std::pair<std::string, std::string> result = excludeLines(content, lineNum);
+//     // std::string editedLine = result.first;
+//     // std::string rest = result.second;
+//     std::string oldTempContent = oldContent.toStdString();
+//     std::pair<int, int> textCords = selectEditedText(content);
+//     std::string editedLine = content.substr(textCords.first, textCords.second-textCords.first-1);
+//     std::string before = content.substr(0, textCords.first);
+//     std::string after = content.substr(textCords.second, content.length());
+//     debugTextEdit(this);
+//     const char* cstr = before.c_str();
+//     QString html = QString(compile(cstr));
+//     before = html.toStdString();
+//     cstr = after.c_str();
+//     html = QString(compile(cstr));
+//     after = html.toStdString();
+//     textCords = selectEditedText(content);
+//     std::string newLine = content.substr(textCords.first, textCords.second-textCords.first-1);
+//     oldContent = QString::fromStdString(before + newLine + after);
+//     std::string merged = before + "<p>" + editedLine + "</p>" + after;
+//     setHtml(QString::fromStdString(merged));
+//
+//
+// }
 
+
+
+struct TextBlock {
+    QString htmlVal;
+    std::string mdVal;
+    int start, end;
+};
+
+
+std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
+    std::vector<TextBlock> textBlocks;
+    narrayInfo* nodes = narray->data[0]->children;
+    for (int i = 0; i < nodes->elements; i++) {
+        std::string htmlVal = to_html(nodes->data[i]);
+
+        textBlocks.push_back(TextBlock());
+    }
+
+}
+
+void CoolTextEdit::refreshWidget() {
+    narrayInfo* narray= compile_to_nodes(this->toPlainText().toStdString().c_str());
 
 }
