@@ -234,6 +234,9 @@ void CoolTextEdit::refreshWidget() {
     int selectedBlock = getSelectedBlock(textBlocks, pos);
     std::string content = renderBlocks(textBlocks, selectedBlock);
     this->setHtml(QString::fromStdString(content));
+    QTextCursor newCursor = this->textCursor();
+    newCursor.setPosition(qMin(pos, this->document()->characterCount() - 1));
+    this->setTextCursor(newCursor);
     this->textBlocks = textBlocks;
-    this->coursor = this->textCursor();
+    this->pos = pos;
 }

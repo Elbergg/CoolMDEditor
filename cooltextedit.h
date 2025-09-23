@@ -25,7 +25,7 @@ public:
     std::pair<int, int> selectEditedText(std::string&);
     CoolTextEdit();
     int selectedBlock;
-    QTextCursor coursor;
+    int pos = 0;
     std::vector<TextBlock> textBlocks;
 };
 
