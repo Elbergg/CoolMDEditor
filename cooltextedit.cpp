@@ -158,11 +158,13 @@ QString merge(std::string& rest, std::string& editedLine, int lineNum) {
 int getHtmlLength(QString& htmlVal) {
     QTextDocument doc;
     doc.setHtml(htmlVal);
-    int len = doc.toPlainText().length();
-    if (len == 0) {
+    QTextCursor cursor(&doc);
+    cursor.movePosition(QTextCursor::End);
+    int pos = cursor.position();
+    if (pos == 0) {
         return 1;
     }
-    return len;
+    return pos;
 }
 
 std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
@@ -235,7 +237,7 @@ void CoolTextEdit::refreshWidget() {
     std::string content = renderBlocks(textBlocks, selectedBlock);
     this->setHtml(QString::fromStdString(content));
     QTextCursor newCursor = this->textCursor();
-    newCursor.setPosition(qMin(pos, this->document()->characterCount() - 1));
+    newCursor.setPosition(qMin(pos-1, this->document()->characterCount() - 1));
     this->setTextCursor(newCursor);
     this->textBlocks = textBlocks;
     this->pos = pos;
