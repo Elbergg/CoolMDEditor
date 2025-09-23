@@ -16,6 +16,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::onTextChanged()
 {
+    ui->textEdit->setTextCursor(ui->textEdit->coursor);
     disconnect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
     ui->textEdit->refreshWidget();
     // QString html = ui->textEdit->toPlainText();

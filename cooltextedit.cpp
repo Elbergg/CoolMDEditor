@@ -152,25 +152,88 @@ QString merge(std::string& rest, std::string& editedLine, int lineNum) {
 
 
 
-struct TextBlock {
-    QString htmlVal;
-    std::string mdVal;
-    int start, end;
-};
 
+
+
+int getHtmlLength(QString& htmlVal) {
+    QTextDocument doc;
+    doc.setHtml(htmlVal);
+    int len = doc.toPlainText().length();
+    if (len == 0) {
+        return 1;
+    }
+    return len;
+}
 
 std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
     std::vector<TextBlock> textBlocks;
     narrayInfo* nodes = narray->data[0]->children;
+    int start, end = 0;
     for (int i = 0; i < nodes->elements; i++) {
-        std::string htmlVal = to_html(nodes->data[i]);
-
-        textBlocks.push_back(TextBlock());
+        QString htmlVal = QString::fromStdString(std::string(to_html(nodes->data[i])));
+        std::string mdVal = to_raw(nodes->data[i]);
+        end = start + getHtmlLength(htmlVal);
+        textBlocks.push_back(TextBlock{htmlVal, mdVal, start, end});
+        start = end;
     }
+    return textBlocks;
 
 }
 
-void CoolTextEdit::refreshWidget() {
-    narrayInfo* narray= compile_to_nodes(this->toPlainText().toStdString().c_str());
 
+int getSelectedBlock(std::vector<TextBlock>& textBlocks, int pos) {
+    for (int i = 0; i < textBlocks.size(); i++) {
+        if (pos >= textBlocks[i].start && pos < textBlocks[i].end) {
+            return i;
+        }
+    }
+    return textBlocks.size();
+}
+
+
+std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) {
+    std::string content;
+    for (int i = 0; i < textBlocks.size(); i++) {
+        if (i == selectedBlock) {
+            content += textBlocks[i].mdVal;
+        }
+        else {
+            content+= textBlocks[i].htmlVal.toStdString();
+        }
+    }
+    return content;
+}
+
+
+std::string CoolTextEdit::refreshBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) {
+    std::string content;
+    for (int i = 0; i < textBlocks.size(); i++) {
+        if (i == selectedBlock) {
+            content += this->toPlainText().toStdString().substr(textBlocks[i].start, textBlocks[i].end - textBlocks[i].start);
+        }
+        else {
+            content+= textBlocks[i].mdVal;
+        }
+    }
+    return content;
+}
+
+void CoolTextEdit::refreshWidget() {
+    narrayInfo* narray;
+    QTextCursor cursor = this->textCursor();
+    int pos = cursor.position();
+    if (textBlocks.size() == 0) {
+        std::string text= this->toPlainText().toStdString();
+        narray = compile_to_nodes(this->toPlainText().toStdString().c_str());
+    }
+    else {
+        narray = compile_to_nodes(refreshBlocks(textBlocks, selectedBlock).c_str());
+
+    }
+    std::vector<TextBlock> textBlocks = extractTextBlocks(narray);
+    int selectedBlock = getSelectedBlock(textBlocks, pos);
+    std::string content = renderBlocks(textBlocks, selectedBlock);
+    this->setHtml(QString::fromStdString(content));
+    this->textBlocks = textBlocks;
+    this->coursor = this->textCursor();
 }
