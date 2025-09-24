@@ -24,7 +24,7 @@ public:
     void refreshWidget();
     std::pair<int, int> selectEditedText(std::string&);
     CoolTextEdit();
-    int selectedBlock;
+    int selectedBlock = 0;
     int pos = 0;
     std::vector<TextBlock> textBlocks;
 };

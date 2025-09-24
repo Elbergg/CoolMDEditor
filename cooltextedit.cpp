@@ -128,7 +128,8 @@ std::string CoolTextEdit::refreshBlocks(std::vector<TextBlock>& textBlocks, int 
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            content += this->toPlainText().toStdString().substr(textBlocks[i].start, textBlocks[i].end - textBlocks[i].start);
+            std::string changedText = this->toPlainText().toStdString().substr(textBlocks[i].start, textBlocks[i].end - textBlocks[i].start);
+            content += changedText;
         }
         else {
             content+= textBlocks[i].mdVal;
@@ -141,7 +142,7 @@ void CoolTextEdit::refreshWidget() {
     narrayInfo* narray;
     QTextCursor cursor = this->textCursor();
     int pos = cursor.position();
-    if (textBlocks.size() == 0) {
+    if (this->textBlocks.size() == 0) {
         std::string text= this->toPlainText().toStdString();
         narray = compile_to_nodes(this->toPlainText().toStdString().c_str());
     }
@@ -158,4 +159,5 @@ void CoolTextEdit::refreshWidget() {
     this->setTextCursor(newCursor);
     this->textBlocks = textBlocks;
     this->pos = pos;
+    this->selectedBlock = selectedBlock;
 }
