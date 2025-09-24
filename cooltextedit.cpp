@@ -57,21 +57,26 @@ void debugTextEdit(CoolTextEdit* edit) {
 //     return pos;
 // }
 
-void assignHtmlLength(std::vector<TextBlock>& textBlocks) {
+void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     QTextDocument doc;
     QTextCursor cursor(&doc);
     std::string html;
     int start = 0;
     for (int i = 0; i < textBlocks.size(); ++i) {
         textBlocks[i].start = start;
-        html += textBlocks[i].htmlVal.toStdString();
+        if (i == selected_block) {
+            html += textBlocks[i].mdVal;
+        }
+        else {
+            html += textBlocks[i].htmlVal.toStdString();
+        }
         doc.setHtml(QString::fromStdString(html));
         cursor.movePosition(QTextCursor::End);
         textBlocks[i].end = cursor.position() + 1;
         start = cursor.position() + 2;
     }
 }
-std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
+std::vector<TextBlock> extractTextBlocks(narrayInfo* narray, int selected_block) {
     std::vector<TextBlock> textBlocks;
     narrayInfo* nodes = narray->data[0]->children;
     for (int i = 0; i < nodes->elements; i++) {
@@ -79,7 +84,7 @@ std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
         std::string mdVal = to_raw(nodes->data[i]);
         textBlocks.push_back(TextBlock{htmlVal, mdVal});
     }
-    assignHtmlLength(textBlocks);
+    assignHtmlLength(textBlocks, selected_block);
     return textBlocks;
 
 }
@@ -120,6 +125,7 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
             content+= textBlocks[i].htmlVal.toStdString();
         }
     }
+    assignHtmlLength(textBlocks, selectedBlock);
     return content;
 }
 
@@ -150,7 +156,7 @@ void CoolTextEdit::refreshWidget() {
         narray = compile_to_nodes(refreshBlocks(textBlocks, selectedBlock).c_str());
 
     }
-    std::vector<TextBlock> textBlocks = extractTextBlocks(narray);
+    std::vector<TextBlock> textBlocks = extractTextBlocks(narray, this->selectedBlock);
     int selectedBlock = getSelectedBlock(textBlocks, pos);
     std::string content = renderBlocks(textBlocks, selectedBlock);
     this->setHtml(QString::fromStdString(content));
