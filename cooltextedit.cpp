@@ -23,47 +23,6 @@ int CoolTextEdit::getLineNumber(){
 }
 
 
-std::pair<std::string, std::string> excludeLines(std::string& content, int lineNum)
-{
-    int n = 0;
-    std::istringstream iss(content);
-    std::string editedLine;
-    std::string rest;
-    for(std::string line; std::getline(iss, line);)
-    {
-        if(n == lineNum)
-        {
-            editedLine = line;
-            editedLine += '\n';
-        }
-        else{
-            rest += line;
-            rest += "\n";
-        }
-        n++;
-    }
-    //TODO MAKE THIS BETTER!!!
-    return {editedLine, rest};
-}
-
-// std::pair<std::string, std::string> excludeLines(const std::string& content, int lineNum)
-// {
-//     int n = 0;
-//     std::istringstream iss(content);
-//     std::string editedLine;
-//     std::string rest;
-//     for(std::string line; std::getline(iss, line);)
-//     {
-//         if(n == lineNum)
-//         {
-//             line = '`' + line + '`';
-//         }
-//         //TODO MAKE THIS BETTER
-//         rest += line;
-//         n++;
-//     }
-//     return {editedLine, rest};
-// }
 
 void debugTextEdit(CoolTextEdit* edit) {
     qDebug() << "=== QTextEdit Debug Info ===";
@@ -83,109 +42,67 @@ void debugTextEdit(CoolTextEdit* edit) {
 }
 
 
-std::pair<int, int> CoolTextEdit::selectEditedText(std::string& content) {
-    if (content == "") {
-        return {0, content.length()};
-    }
-    QTextCursor cursor = this->textCursor();
-    int pos = cursor.position();
-    int start = pos -1;
-    while (content[start] != '\n' && start != -1) {
-        start--;
-    }int end = pos;
-    while (content[end] != '\n' && end != this->toPlainText().length()) {
-        end++;
-    }
-    return {start + 1, end};
-}
-
-QString merge(std::string& rest, std::string& editedLine, int lineNum) {
-    int n = 0;
-    std::istringstream iss(rest);
-    std::string result;
-    for(std::string line; std::getline(iss, line);)
-    {
-        if(n == lineNum)
-        {
-            result += editedLine;
-        }
-        else{
-            result += line;
-        }
-        n++;
-    }
-    if(n == lineNum)
-    {
-        result += editedLine;
-    }
-    return QString::fromStdString(result);
-}
 
 
 
-// void CoolTextEdit::refreshWidget(){
-//     int lineNum = this->getLineNumber();
-//     std::string content = this->toPlainText().toStdString();
-//     std::pair<std::string, std::string> result = excludeLines(content, lineNum);
-//     // std::string editedLine = result.first;
-//     // std::string rest = result.second;
-//     std::string oldTempContent = oldContent.toStdString();
-//     std::pair<int, int> textCords = selectEditedText(content);
-//     std::string editedLine = content.substr(textCords.first, textCords.second-textCords.first-1);
-//     std::string before = content.substr(0, textCords.first);
-//     std::string after = content.substr(textCords.second, content.length());
-//     debugTextEdit(this);
-//     const char* cstr = before.c_str();
-//     QString html = QString(compile(cstr));
-//     before = html.toStdString();
-//     cstr = after.c_str();
-//     html = QString(compile(cstr));
-//     after = html.toStdString();
-//     textCords = selectEditedText(content);
-//     std::string newLine = content.substr(textCords.first, textCords.second-textCords.first-1);
-//     oldContent = QString::fromStdString(before + newLine + after);
-//     std::string merged = before + "<p>" + editedLine + "</p>" + after;
-//     setHtml(QString::fromStdString(merged));
-//
-//
+// int getHtmlLength(QString& htmlVal) {
+//     QTextDocument doc;
+//     doc.setHtml(htmlVal);
+//     QTextCursor cursor(&doc);
+//     cursor.movePosition(QTextCursor::End);
+//     int pos = cursor.position();
+//     if (pos == 0) {
+//         return 1;
+//     }
+//     return pos;
 // }
 
-
-
-
-
-
-int getHtmlLength(QString& htmlVal) {
+void assignHtmlLength(std::vector<TextBlock>& textBlocks) {
     QTextDocument doc;
-    doc.setHtml(htmlVal);
     QTextCursor cursor(&doc);
-    cursor.movePosition(QTextCursor::End);
-    int pos = cursor.position();
-    if (pos == 0) {
-        return 1;
+    std::string html;
+    int start = 0;
+    for (int i = 0; i < textBlocks.size(); ++i) {
+        textBlocks[i].start = start;
+        html += textBlocks[i].htmlVal.toStdString();
+        doc.setHtml(QString::fromStdString(html));
+        cursor.movePosition(QTextCursor::End);
+        textBlocks[i].end = cursor.position() + 1;
+        start = cursor.position() + 2;
     }
-    return pos;
 }
-
 std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
     std::vector<TextBlock> textBlocks;
     narrayInfo* nodes = narray->data[0]->children;
-    int start, end = 0;
     for (int i = 0; i < nodes->elements; i++) {
         QString htmlVal = QString::fromStdString(std::string(to_html(nodes->data[i])));
         std::string mdVal = to_raw(nodes->data[i]);
-        end = start + getHtmlLength(htmlVal);
-        textBlocks.push_back(TextBlock{htmlVal, mdVal, start, end});
-        start = end;
+        textBlocks.push_back(TextBlock{htmlVal, mdVal});
     }
+    assignHtmlLength(textBlocks);
     return textBlocks;
 
 }
 
 
+// std::vector<TextBlock> extractTextBlocks(narrayInfo* narray) {
+//     std::vector<TextBlock> textBlocks;
+//     narrayInfo* nodes = narray->data[0]->children;
+//     int start, end = 0;
+//     for (int i = 0; i < nodes->elements; i++) {
+//         QString htmlVal = QString::fromStdString(std::string(to_html(nodes->data[i])));
+//         std::string mdVal = to_raw(nodes->data[i]);
+//         end = start + getHtmlLength(htmlVal);
+//         textBlocks.push_back(TextBlock{htmlVal, mdVal, start, end});
+//         start = end;
+//     }
+//     return textBlocks;
+//
+// }
+
 int getSelectedBlock(std::vector<TextBlock>& textBlocks, int pos) {
     for (int i = 0; i < textBlocks.size(); i++) {
-        if (pos >= textBlocks[i].start && pos < textBlocks[i].end) {
+        if (pos >= textBlocks[i].start && pos <= textBlocks[i].end) {
             return i;
         }
     }
