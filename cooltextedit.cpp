@@ -66,7 +66,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     for (int i = 0; i < textBlocks.size(); ++i) {
         textBlocks[i].start = start;
         if (i == selected_block) {
-            html +=  textBlocks[i].mdVal;
+            html +=  "<p>"+textBlocks[i].mdVal+"</p>";
         }
         else {
             html += textBlocks[i].htmlVal.toStdString();
@@ -120,7 +120,7 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            content +=  textBlocks[i].mdVal;
+            content +=  "<p>"+textBlocks[i].mdVal + "</p>";
         }
         else {
             content+= textBlocks[i].htmlVal.toStdString();
@@ -194,7 +194,7 @@ void CoolTextEdit::refreshWidget() {
     std::string content = renderBlocks(textBlocks, selectedBlock);
     this->setHtml(QString::fromStdString(content));
     QTextCursor newCursor = this->textCursor();
-    newCursor.setPosition(qMin(pos-1, this->document()->characterCount() - 1));
+    newCursor.setPosition(qMin(pos, this->document()->characterCount() - 1));
     this->setTextCursor(newCursor);
     this->textBlocks = textBlocks;
     this->pos = pos;
