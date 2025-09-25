@@ -66,7 +66,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     for (int i = 0; i < textBlocks.size(); ++i) {
         textBlocks[i].start = start;
         if (i == selected_block) {
-            html += "<p>" + textBlocks[i].mdVal + "</p>";
+            html +=  textBlocks[i].mdVal;
         }
         else {
             html += textBlocks[i].htmlVal.toStdString();
@@ -120,7 +120,7 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            content += "<p>" + textBlocks[i].mdVal + "</p>";
+            content +=  textBlocks[i].mdVal;
         }
         else {
             content+= textBlocks[i].htmlVal.toStdString();
@@ -141,25 +141,28 @@ std::string CoolTextEdit::refreshBlocks(std::vector<TextBlock>& textBlocks, int 
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            std::string changedText = this->toPlainText().toStdString().substr(textBlocks[i].start-1, textBlocks[i].end - textBlocks[i].start + getTextDiffLen());
-            std::string plainMd = simulateToPlainText(textBlocks[i].mdVal);
-
-            // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
-            auto mispair = std::mismatch(plainMd.begin(), plainMd.end(),
-                            changedText.begin(), changedText.end());
-            // auto diff = *mispair.first;
-            size_t diffStart = std::distance(changedText.begin(), mispair.second);
-            std::string changedTextReverse = changedText;
-            std::reverse(changedTextReverse.begin(), changedTextReverse.end());
-            std::string plainMdReverse = plainMd;
-            std::reverse(plainMdReverse.begin(), plainMdReverse.end());
-
-            // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
-            auto mispairEnd = std::mismatch(plainMdReverse.begin(), plainMdReverse.end(),
-                            changedTextReverse.begin(), changedTextReverse.end());
-            size_t diffEnd = changedTextReverse.length() - std::distance(changedTextReverse.begin(), mispairEnd.second);
-            std::string newMD = textBlocks[i].mdVal.substr(0, diffStart) + changedText.substr(diffStart, diffEnd-diffStart) + textBlocks[i].mdVal.substr(diffEnd-(diffEnd - diffStart), textBlocks[i].mdVal.length() - diffEnd-(diffEnd - diffStart));
-            content += newMD;
+            std::string changedText = this->toPlainText().toStdString().substr(textBlocks[i].start-1, textBlocks[i].end - textBlocks[i].start + getTextDiffLen() + 1);
+            // std::string plainMd = simulateToPlainText(textBlocks[i].mdVal);
+            //
+            // // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
+            // auto mispair = std::mismatch(plainMd.begin(), plainMd.end(),
+            //                 changedText.begin(), changedText.end());
+            // // auto diff = *mispair.first;
+            // size_t diffStart = std::distance(changedText.begin(), mispair.second);
+            // std::string changedTextReverse = changedText;
+            // std::reverse(changedTextReverse.begin(), changedTextReverse.end());
+            // std::string plainMdReverse = plainMd;
+            // std::reverse(plainMdReverse.begin(), plainMdReverse.end());
+            //
+            // // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
+            // auto mispairEnd = std::mismatch(plainMdReverse.begin(), plainMdReverse.end(),
+            //                 changedTextReverse.begin(), changedTextReverse.end());
+            // size_t diffEnd = changedTextReverse.length() - std::distance(changedTextReverse.begin(), mispairEnd.second);
+            // if (diffEnd == diffStart) {
+            //     diffEnd++;
+            // }
+            // std::string newMD = textBlocks[i].mdVal.substr(0, diffStart) + changedText.substr(diffStart, diffEnd-diffStart) + textBlocks[i].mdVal.substr(diffEnd-(diffEnd - diffStart), textBlocks[i].mdVal.length() - diffEnd-(diffEnd - diffStart));
+            content += changedText;
         }
         else {
             content+= textBlocks[i].mdVal;
