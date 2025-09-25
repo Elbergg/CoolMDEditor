@@ -15,10 +15,11 @@ struct TextBlock {
 class CoolTextEdit : public QTextEdit
 {
     Q_OBJECT
+    std::string oldContent;
+    std::string newContent;
     std::string refreshBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
+    int getTextDiffLen();
 public:
-    QString oldContent;
-    QString newContent;
     explicit CoolTextEdit(QWidget* parent = nullptr);
     int getLineNumber();
     void refreshWidget();

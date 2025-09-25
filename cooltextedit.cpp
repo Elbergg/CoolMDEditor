@@ -7,6 +7,7 @@
 #include <QLabel>
 #include <string>
 #include <sstream>
+#include "algorithm"
 CoolTextEdit::CoolTextEdit() {}
 
 CoolTextEdit::CoolTextEdit(QWidget *parent)
@@ -37,8 +38,8 @@ void debugTextEdit(CoolTextEdit* edit) {
     qDebug() << "HTML:" << edit->toHtml();
     qDebug() << "Document:" << edit->document();
     qDebug() << "Cursor position:" << edit->textCursor().position();
-    qDebug() << "Old Content" << edit->oldContent;
-    qDebug() << "New Content" << edit->newContent;
+    // qDebug() << "Old Content" << oldContent;
+    // qDebug() << "New Content" << newContent;
 }
 
 
@@ -65,7 +66,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     for (int i = 0; i < textBlocks.size(); ++i) {
         textBlocks[i].start = start;
         if (i == selected_block) {
-            html += textBlocks[i].mdVal;
+            html += "<p>" + textBlocks[i].mdVal + "</p>";
         }
         else {
             html += textBlocks[i].htmlVal.toStdString();
@@ -119,7 +120,7 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            content += textBlocks[i].mdVal;
+            content += "<p>" + textBlocks[i].mdVal + "</p>";
         }
         else {
             content+= textBlocks[i].htmlVal.toStdString();
@@ -130,12 +131,35 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
 }
 
 
+std::string simulateToPlainText(const std::string& input) {
+    QTextDocument doc;
+    doc.setHtml(QString::fromStdString(input));
+    return doc.toPlainText().toStdString();
+}
+
 std::string CoolTextEdit::refreshBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) {
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            std::string changedText = this->toPlainText().toStdString().substr(textBlocks[i].start, textBlocks[i].end - textBlocks[i].start);
-            content += changedText;
+            std::string changedText = this->toPlainText().toStdString().substr(textBlocks[i].start-1, textBlocks[i].end - textBlocks[i].start + getTextDiffLen());
+            std::string plainMd = simulateToPlainText(textBlocks[i].mdVal);
+
+            // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
+            auto mispair = std::mismatch(plainMd.begin(), plainMd.end(),
+                            changedText.begin(), changedText.end());
+            // auto diff = *mispair.first;
+            size_t diffStart = std::distance(changedText.begin(), mispair.second);
+            std::string changedTextReverse = changedText;
+            std::reverse(changedTextReverse.begin(), changedTextReverse.end());
+            std::string plainMdReverse = plainMd;
+            std::reverse(plainMdReverse.begin(), plainMdReverse.end());
+
+            // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
+            auto mispairEnd = std::mismatch(plainMdReverse.begin(), plainMdReverse.end(),
+                            changedTextReverse.begin(), changedTextReverse.end());
+            size_t diffEnd = changedTextReverse.length() - std::distance(changedTextReverse.begin(), mispairEnd.second);
+            std::string newMD = textBlocks[i].mdVal.substr(0, diffStart) + changedText.substr(diffStart, diffEnd-diffStart) + textBlocks[i].mdVal.substr(diffEnd-(diffEnd - diffStart), textBlocks[i].mdVal.length() - diffEnd-(diffEnd - diffStart));
+            content += newMD;
         }
         else {
             content+= textBlocks[i].mdVal;
@@ -144,7 +168,13 @@ std::string CoolTextEdit::refreshBlocks(std::vector<TextBlock>& textBlocks, int 
     return content;
 }
 
+
+int CoolTextEdit::getTextDiffLen() {
+    return newContent.length() - oldContent.length();
+}
+
 void CoolTextEdit::refreshWidget() {
+    newContent = this->toPlainText().toStdString();
     narrayInfo* narray;
     QTextCursor cursor = this->textCursor();
     int pos = cursor.position();
@@ -166,4 +196,5 @@ void CoolTextEdit::refreshWidget() {
     this->textBlocks = textBlocks;
     this->pos = pos;
     this->selectedBlock = selectedBlock;
+    oldContent = this->toPlainText().toStdString();
 }
