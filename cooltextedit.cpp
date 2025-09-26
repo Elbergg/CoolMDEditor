@@ -62,7 +62,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     QTextDocument doc;
     QTextCursor cursor(&doc);
     std::string html;
-    int start = 0;
+    int start = 1;
     for (int i = 0; i < textBlocks.size(); ++i) {
         textBlocks[i].start = start;
         if (i == selected_block) {
@@ -142,26 +142,7 @@ std::string CoolTextEdit::refreshBlocks(std::vector<TextBlock>& textBlocks, int 
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
             std::string changedText = this->toPlainText().toStdString().substr(textBlocks[i].start-1, textBlocks[i].end - textBlocks[i].start + getTextDiffLen() + 1);
-            // std::string plainMd = simulateToPlainText(textBlocks[i].mdVal);
-            //
-            // // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
-            // auto mispair = std::mismatch(plainMd.begin(), plainMd.end(),
-            //                 changedText.begin(), changedText.end());
-            // // auto diff = *mispair.first;
-            // size_t diffStart = std::distance(changedText.begin(), mispair.second);
-            // std::string changedTextReverse = changedText;
-            // std::reverse(changedTextReverse.begin(), changedTextReverse.end());
-            // std::string plainMdReverse = plainMd;
-            // std::reverse(plainMdReverse.begin(), plainMdReverse.end());
-            //
-            // // std::string changedText = plainMd.substr(textBlocks[i].start-1, pos - textBlocks[i].start) +
-            // auto mispairEnd = std::mismatch(plainMdReverse.begin(), plainMdReverse.end(),
-            //                 changedTextReverse.begin(), changedTextReverse.end());
-            // size_t diffEnd = changedTextReverse.length() - std::distance(changedTextReverse.begin(), mispairEnd.second);
-            // if (diffEnd == diffStart) {
-            //     diffEnd++;
-            // }
-            // std::string newMD = textBlocks[i].mdVal.substr(0, diffStart) + changedText.substr(diffStart, diffEnd-diffStart) + textBlocks[i].mdVal.substr(diffEnd-(diffEnd - diffStart), textBlocks[i].mdVal.length() - diffEnd-(diffEnd - diffStart));
+            textBlocks[i].mdVal = changedText;
             content += changedText;
         }
         else {
@@ -187,7 +168,6 @@ void CoolTextEdit::refreshWidget() {
     }
     else {
         narray = compile_to_nodes(refreshBlocks(textBlocks, selectedBlock).c_str());
-
     }
     std::vector<TextBlock> textBlocks = extractTextBlocks(narray, this->selectedBlock);
     int selectedBlock = getSelectedBlock(textBlocks, pos);
