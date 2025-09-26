@@ -115,12 +115,23 @@ int getSelectedBlock(std::vector<TextBlock>& textBlocks, int pos) {
     return textBlocks.size();
 }
 
+bool replace(std::string& str, const std::string& from, const std::string& to) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return false;
+    str.replace(start_pos, from.length(), to);
+    return true;
+}
+
+
 
 std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) {
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
-            content +=  "<p>"+textBlocks[i].mdVal + "</p>";
+            std::string val = textBlocks[i].mdVal;
+            replace(val, "\n", "<br>");
+            content +=  "<p>"+ val+ "</p>";
         }
         else {
             content+= textBlocks[i].htmlVal.toStdString();
