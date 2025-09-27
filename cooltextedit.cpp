@@ -173,6 +173,7 @@ void CoolTextEdit::refreshWidget() {
     narrayInfo* narray;
     QTextCursor cursor = this->textCursor();
     int pos = cursor.position();
+    int selectedBlock = getSelectedBlock(textBlocks, pos);
     if (this->textBlocks.size() == 0) {
         std::string text= this->toPlainText().toStdString();
         narray = compile_to_nodes(this->toPlainText().toStdString().c_str());
@@ -181,7 +182,7 @@ void CoolTextEdit::refreshWidget() {
         narray = compile_to_nodes(refreshBlocks(textBlocks, selectedBlock).c_str());
     }
     std::vector<TextBlock> textBlocks = extractTextBlocks(narray, this->selectedBlock);
-    int selectedBlock = getSelectedBlock(textBlocks, pos);
+    selectedBlock = getSelectedBlock(textBlocks, pos);
     std::string content = renderBlocks(textBlocks, selectedBlock);
     this->setHtml(QString::fromStdString(content));
     QTextCursor newCursor = this->textCursor();
