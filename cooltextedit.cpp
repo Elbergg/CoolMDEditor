@@ -58,6 +58,14 @@ void debugTextEdit(CoolTextEdit* edit) {
 //     return pos;
 // }
 
+int replace(std::string& str, const std::string& from, const std::string& to, int& start) {
+    size_t start_pos = str.find(from);
+    if(start_pos == std::string::npos)
+        return -1;
+    str.replace(start_pos, from.length(), to);
+    return start_pos + from.length();
+}
+
 void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     QTextDocument doc;
     QTextCursor cursor(&doc);
@@ -66,7 +74,10 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     for (int i = 0; i < textBlocks.size(); ++i) {
         textBlocks[i].start = start;
         if (i == selected_block) {
-            html +=  "<p>"+textBlocks[i].mdVal+"</p>";
+            int j = 0;
+            std::string val = textBlocks[i].mdVal;
+            while (replace(val, "\n", "<br>", j)!= -1);
+            html +=  "<p>"+val+"</p>";
         }
         else {
             html += textBlocks[i].htmlVal.toStdString();
@@ -115,13 +126,7 @@ int getSelectedBlock(std::vector<TextBlock>& textBlocks, int pos) {
     return textBlocks.size();
 }
 
-bool replace(std::string& str, const std::string& from, const std::string& to) {
-    size_t start_pos = str.find(from);
-    if(start_pos == std::string::npos)
-        return false;
-    str.replace(start_pos, from.length(), to);
-    return true;
-}
+
 
 
 
@@ -130,7 +135,8 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
             std::string val = textBlocks[i].mdVal;
-            replace(val, "\n", "<br>");
+            int j = 0;
+            while (replace(val, "\n", "<br>", j)!= -1);
             content +=  "<p>"+ val+ "</p>";
         }
         else {
