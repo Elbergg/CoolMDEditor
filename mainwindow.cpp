@@ -1,6 +1,8 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include "coolmd.h"
+#include <QFileDialog>
+#include <QMessageBox>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -45,3 +47,25 @@ void MainWindow::onTextChanged()
     // QString html = QString(compile(cstr));
     // ui->textBrowser->setHtml(html);
 // }
+
+void MainWindow::on_actionOpen_triggered()
+{
+    QString fileName = QFileDialog::getOpenFileName(this,
+                                                    tr("Open File"),
+                                                    "",
+                                                    tr("All Files (*);;Text Files (*.txt)"));
+
+    if (!fileName.isEmpty()) {
+        QFile file(fileName);
+        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QTextStream in(&file);
+            QString content = in.readAll();
+            ui->textEdit->setText(content);  // ← Put content in QTextEdit
+            file.close();
+        } else {
+            QMessageBox::warning(this, tr("Error"),
+                                 tr("Could not open file"));
+        }
+    }
+}
+
