@@ -136,6 +136,7 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
         if (i == selectedBlock) {
             std::string val = textBlocks[i].mdVal;
             int j = 0;
+            //TODO fix the problem where a paragraph adds a newline with every eddit
             while (replace(val, "\n", "<br>", j)!= -1);
             content +=  "<p>"+ val+ "</p>";
         }
