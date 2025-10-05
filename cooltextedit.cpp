@@ -99,14 +99,23 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
         }
         doc.setHtml(QString::fromStdString(html));
         cursor.movePosition(QTextCursor::End);
-        textBlocks[i].end = cursor.position() + 1;
-        start = cursor.position() + 2;
+        if (start == cursor.position()+1) {
+            textBlocks[i].end = start-1;
+            textBlocks[i].start = start -1;
+            start = cursor.position()+1;
+        }else {
+            textBlocks[i].end = cursor.position() + 1;
+            start = cursor.position() + 2;
+        }
+
+
     }
 }
 std::vector<TextBlock> extractTextBlocks(narrayInfo* narray, int selected_block) {
     std::vector<TextBlock> textBlocks;
     narrayInfo* nodes = narray->data[0]->children;
     for (int i = 0; i < nodes->elements; i++) {
+        //TODO THE NEWLINE BLOCK CONSUMES THE HASHTAGS IN THE HEADER, BIG PROBLEM, HASHNODES DO NOT HAVE A VALUE
         QString htmlVal = QString::fromStdString(std::string(to_html(nodes->data[i])));
         std::string mdVal = to_raw(nodes->data[i]);
         textBlocks.push_back(TextBlock{htmlVal, mdVal});
