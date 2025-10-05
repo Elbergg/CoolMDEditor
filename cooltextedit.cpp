@@ -66,6 +66,21 @@ int replace(std::string& str, const std::string& from, const std::string& to, in
     return start_pos + from.length();
 }
 
+void CoolTextEdit::highlightText(int begin, int end) {
+    QTextCursor clearCursor(this->document());
+    clearCursor.select(QTextCursor::Document);
+    QTextCharFormat clearFmt;
+    clearFmt.setBackground(Qt::transparent);
+    clearCursor.mergeCharFormat(clearFmt);
+    QTextCharFormat fmt;
+    fmt.setBackground(Qt::yellow);
+    QTextCursor cursor(this->document());
+    cursor.setPosition(begin, QTextCursor::MoveAnchor);
+    cursor.setPosition(end, QTextCursor::KeepAnchor);
+    cursor.mergeCharFormat(fmt);
+}
+
+
 void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
     QTextDocument doc;
     QTextCursor cursor(&doc);
@@ -77,7 +92,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
             int j = 0;
             std::string val = textBlocks[i].mdVal;
             while (replace(val, "\n", "<br>", j)!= -1);
-            html +=  "<p>"+val+"</p>";
+            html +=  val;
         }
         else {
             html += textBlocks[i].htmlVal.toStdString();
@@ -130,7 +145,7 @@ int getSelectedBlock(std::vector<TextBlock>& textBlocks, int pos) {
 
 
 
-std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) {
+std::string CoolTextEdit::renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) {
     std::string content;
     for (int i = 0; i < textBlocks.size(); i++) {
         if (i == selectedBlock) {
@@ -138,7 +153,8 @@ std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock) 
             int j = 0;
             //TODO fix the problem where a paragraph adds a newline with every eddit
             while (replace(val, "\n", "<br>", j)!= -1);
-            content +=  "<p>"+ val+ "</p>";
+            content +=  val;
+
         }
         else {
             content+= textBlocks[i].htmlVal.toStdString();
@@ -180,7 +196,7 @@ void CoolTextEdit::refreshWidget() {
     narrayInfo* narray;
     QTextCursor cursor = this->textCursor();
     int pos = cursor.position();
-    int selectedBlock = getSelectedBlock(textBlocks, pos);
+    // int selectedBlock = getSelectedBlock(textBlocks, pos);
     if (this->textBlocks.size() == 0) {
         std::string text= this->toPlainText().toStdString();
         narray = compile_to_nodes(this->toPlainText().toStdString().c_str());
@@ -189,7 +205,7 @@ void CoolTextEdit::refreshWidget() {
         narray = compile_to_nodes(refreshBlocks(textBlocks, selectedBlock).c_str());
     }
     std::vector<TextBlock> textBlocks = extractTextBlocks(narray, this->selectedBlock);
-    selectedBlock = getSelectedBlock(textBlocks, pos);
+    int selectedBlock = getSelectedBlock(textBlocks, pos);
     std::string content = renderBlocks(textBlocks, selectedBlock);
     this->setHtml(QString::fromStdString(content));
     QTextCursor newCursor = this->textCursor();
@@ -199,4 +215,5 @@ void CoolTextEdit::refreshWidget() {
     this->pos = pos;
     this->selectedBlock = selectedBlock;
     oldContent = this->toPlainText().toStdString();
+    highlightText(textBlocks[selectedBlock].start-1, textBlocks[selectedBlock].end);
 }

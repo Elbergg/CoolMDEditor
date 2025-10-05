@@ -19,6 +19,8 @@ class CoolTextEdit : public QTextEdit
     std::string newContent;
     std::string refreshBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
     int getTextDiffLen();
+    void highlightText(int begin, int end);
+    std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
 public:
     explicit CoolTextEdit(QWidget* parent = nullptr);
     int getLineNumber();
