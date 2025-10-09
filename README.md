@@ -29,7 +29,7 @@ char* result = compile_to_html(text);
 
 - Q: Is it the fastest engine out there?
   
-  A: Probanly not
+  A: Probably not
 
 - Q: Is it 100% [commonmark](https://commonmark.org/) compatible?
   
