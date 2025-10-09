@@ -43,6 +43,6 @@ char* result = compile_to_html(text);
 
 Thanks to [babelmark](https://babelmark.github.io/) for being a great tool for this project
 
-Also make sure to check out my [editor]([GitHub - Elbergg/CoolMDEditor](https://github.com/Elbergg/CoolMDEditor) which uses this engine to renders its markdown, however it is still very early in developement.
+Also make sure to check out my [editor](https://github.com/Elbergg/CoolMDEditor) which uses this engine to renders its markdown, however it is still very early in developement.
 
 
