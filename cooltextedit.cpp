@@ -114,12 +114,18 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
 std::vector<TextBlock> extractTextBlocks(narrayInfo* narray, int selected_block) {
     std::vector<TextBlock> textBlocks;
     narrayInfo* nodes = narray->data[0]->children;
+    struct Node* bodyNode = (Node*)calloc(1, sizeof(struct Node));
+    bodyNode->children  = createNodeArray(1);
     for (int i = 0; i < nodes->elements; i++) {
+        addToNodeArray(bodyNode->children, nodes->data[i]);
         //TODO THE NEWLINE BLOCK CONSUMES THE HASHTAGS IN THE HEADER, BIG PROBLEM, HASHNODES DO NOT HAVE A VALUE
-        QString htmlVal = QString::fromStdString(std::string(to_html(nodes->data[i])));
-        std::string mdVal = to_raw(nodes->data[i]);
+        QString htmlVal = QString::fromStdString(std::string(to_html(bodyNode)->data));
+        std::string mdVal = to_raw(bodyNode)->data;
         textBlocks.push_back(TextBlock{htmlVal, mdVal});
+        bodyNode->children->data[0] = NULL;
+        bodyNode->children->elements = 0;
     }
+    free_node(bodyNode);
     assignHtmlLength(textBlocks, selected_block);
     return textBlocks;
 
@@ -202,6 +208,11 @@ int CoolTextEdit::getTextDiffLen() {
 
 void CoolTextEdit::refreshWidget() {
     newContent = this->toPlainText().toStdString();
+    if(newContent == "") {
+        selectedBlock = 0;
+        textBlocks.clear();
+        return;
+    }
     narrayInfo* narray;
     QTextCursor cursor = this->textCursor();
     int pos = cursor.position();
