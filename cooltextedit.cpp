@@ -207,6 +207,9 @@ int CoolTextEdit::getTextDiffLen() {
 }
 
 void CoolTextEdit::refreshWidget() {
+    if (newContent == this->toPlainText().toStdString()) {
+        return;
+    }
     newContent = this->toPlainText().toStdString();
     if(newContent == "") {
         selectedBlock = 0;
