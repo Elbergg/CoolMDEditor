@@ -13,6 +13,10 @@ CoolTextEdit::CoolTextEdit() {}
 CoolTextEdit::CoolTextEdit(QWidget *parent)
     : QTextEdit(parent)
 {
+    this->document()->setDefaultStyleSheet(
+    "p { margin: 0; padding: 0; line-height: 1.2; } "
+    "br { line-height: 1.0; }"
+);
 }
 
 int CoolTextEdit::getLineNumber(){
@@ -92,7 +96,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
             int j = 0;
             std::string val = textBlocks[i].mdVal;
             while (replace(val, "\n", "<br>", j)!= -1);
-            html +=  val;
+            html +=  val  ;
         }
         else {
             html += textBlocks[i].htmlVal.toStdString();
@@ -121,6 +125,9 @@ std::vector<TextBlock> extractTextBlocks(narrayInfo* narray, int selected_block)
         //TODO THE NEWLINE BLOCK CONSUMES THE HASHTAGS IN THE HEADER, BIG PROBLEM, HASHNODES DO NOT HAVE A VALUE
         QString htmlVal = QString::fromStdString(std::string(to_html(bodyNode)->data));
         std::string mdVal = to_raw(bodyNode)->data;
+        if (mdVal == "\n") {
+            htmlVal = QString::fromStdString("<p>&nbsp;</p>");
+        }
         textBlocks.push_back(TextBlock{htmlVal, mdVal});
         bodyNode->children->data[0] = NULL;
         bodyNode->children->elements = 0;
@@ -167,8 +174,8 @@ std::string CoolTextEdit::renderBlocks(std::vector<TextBlock>& textBlocks, int s
             std::string val = textBlocks[i].mdVal;
             int j = 0;
             //TODO fix the problem where a paragraph adds a newline with every eddit
-            while (replace(val, "\n", "<br>", j)!= -1);
-            content +=  val;
+            // while (replace(val, "\n", "<br>", j)!= -1);
+            content += "<p>" + val +"</p>"  ;
 
         }
         else {
@@ -207,6 +214,7 @@ int CoolTextEdit::getTextDiffLen() {
 }
 
 void CoolTextEdit::refreshWidget() {
+    // this->document()->setDefaultStyleSheet("p { margin: 0; padding: 0; }");
     if (newContent == this->toPlainText().toStdString()) {
         return;
     }
@@ -230,7 +238,16 @@ void CoolTextEdit::refreshWidget() {
     std::vector<TextBlock> textBlocks = extractTextBlocks(narray, this->selectedBlock);
     int selectedBlock = getSelectedBlock(textBlocks, pos);
     std::string content = renderBlocks(textBlocks, selectedBlock);
-    this->setHtml(QString::fromStdString(content));
+    QString css = R"(
+    <style>
+        p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
+        }
+    </style>
+)";
+    this->setHtml(css+ QString::fromStdString(content));
     QTextCursor newCursor = this->textCursor();
     newCursor.setPosition(qMin(pos, this->document()->characterCount() - 1));
     this->setTextCursor(newCursor);

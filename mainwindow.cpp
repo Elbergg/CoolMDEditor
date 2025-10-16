@@ -23,6 +23,7 @@ void MainWindow::onTextChanged()
     QTextCursor cursor = ui->textEdit->textCursor();
     cursor.setPosition(ui->textEdit->pos);
     ui->textEdit->setTextCursor(cursor);
+    // ui->textEdit->document()->setDefaultStyleSheet("p { margin: 0; padding: 0; }");
     disconnect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
     ui->textEdit->refreshWidget();
     connect(ui->textEdit, &QTextEdit::textChanged, this, &MainWindow::onTextChanged);
