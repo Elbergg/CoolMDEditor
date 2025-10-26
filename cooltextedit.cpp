@@ -95,7 +95,7 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
         if (i == selected_block) {
             int j = 0;
             std::string val = textBlocks[i].mdVal;
-            while (replace(val, "\n", "<br>", j)!= -1);
+            // while (replace(val, "\n", "<br>", j)!= -1);
             html +=  val  ;
         }
         else {
@@ -103,13 +103,17 @@ void assignHtmlLength(std::vector<TextBlock>& textBlocks, int selected_block) {
         }
         doc.setHtml(QString::fromStdString(html));
         cursor.movePosition(QTextCursor::End);
+        QString plainText = doc.toPlainText();
+        qDebug() << "Plain text:" << plainText;
+        qDebug() << "Length:" << plainText.length();
+        qDebug() << "Cursor pos:" << cursor.position();
         if (start == cursor.position()+1) {
             textBlocks[i].end = start-1;
             textBlocks[i].start = start -1;
             start = cursor.position()+1;
         }else {
-            textBlocks[i].end = cursor.position() + 1;
-            start = cursor.position() + 2;
+            textBlocks[i].end = cursor.position();
+            start = cursor.position() + 1;
         }
 
 
@@ -127,6 +131,11 @@ std::vector<TextBlock> extractTextBlocks(narrayInfo* narray, int selected_block)
         std::string mdVal = to_raw(bodyNode)->data;
         if (mdVal == "\n") {
             htmlVal = QString::fromStdString("<p>&nbsp;</p>");
+        }else {
+            std::string val = mdVal;
+            int j = 0;
+            while (replace(val, "\n", "<br>", j)!= -1);
+            mdVal = val;
         }
         textBlocks.push_back(TextBlock{htmlVal, mdVal});
         bodyNode->children->data[0] = NULL;
