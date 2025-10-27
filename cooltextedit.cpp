@@ -1,4 +1,7 @@
 #include "cooltextedit.h"
+
+#include <iostream>
+
 #include "coolmd.h"
 #include <QTextEdit>
 #include <QTextBlock>
@@ -8,7 +11,6 @@
 #include <string>
 #include <sstream>
 #include "algorithm"
-CoolTextEdit::CoolTextEdit() {}
 
 CoolTextEdit::CoolTextEdit(QWidget* parent)
     : QTextEdit(parent) {
@@ -19,6 +21,19 @@ CoolTextEdit::CoolTextEdit(QWidget* parent)
 //     "br { line-height: 1.0; }"
 // );
 // }
+
+
+CoolTextEdit::CoolTextEdit()
+    : QTextEdit(nullptr) {
+    connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
+}
+
+
+void CoolTextEdit::handleTextChanged() {
+    std::cout << "handleTextChanged" << std::endl;
+    emit onTextChanged();
+}
+
 
 int CoolTextEdit::getLineNumber(){
     QTextCursor cursor = this->textCursor();

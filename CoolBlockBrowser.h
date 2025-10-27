@@ -54,9 +54,10 @@ private:
         containerLayout->setAlignment(Qt::AlignTop);
         containerLayout->setSpacing(5);
         containerLayout->setContentsMargins(10, 10, 10, 10);
-
         scrollArea->setWidget(container);
         mainLayout->addWidget(scrollArea);
+        CoolTextEdit* cedit = new CoolTextEdit();
+        insertWidget(0, cedit);
     }
 };
 

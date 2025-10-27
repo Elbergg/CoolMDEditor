@@ -31,6 +31,12 @@ public:
     int selectedBlock = 0;
     int pos = 0;
     std::vector<TextBlock> textBlocks;
+
+    signals:
+        void onTextChanged();
+
+private slots:
+    void handleTextChanged();
 };
 
 #endif // COOLTEXTEDIT_H
