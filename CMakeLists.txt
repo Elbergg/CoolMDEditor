@@ -22,6 +22,8 @@ set(PROJECT_SOURCES
         mainwindow.ui
         cooltextedit.cpp
         cooltextedit.h
+        CoolBlockBrowser.cpp
+        CoolBlockBrowser.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
