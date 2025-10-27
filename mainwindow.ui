@@ -14,13 +14,13 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <widget class="CoolTextEdit" name="textEdit">
+   <widget class="CoolBlockBrowser" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>50</x>
-      <y>40</y>
-      <width>431</width>
-      <height>481</height>
+      <x>90</x>
+      <y>50</y>
+      <width>391</width>
+      <height>451</height>
      </rect>
     </property>
    </widget>
@@ -57,9 +57,10 @@
  </widget>
  <customwidgets>
   <customwidget>
-   <class>CoolTextEdit</class>
-   <extends>QTextEdit</extends>
-   <header location="global">cooltextedit.h</header>
+   <class>CoolBlockBrowser</class>
+   <extends>QWidget</extends>
+   <header location="global">CoolBlockBrowser.h</header>
+   <container>1</container>
   </customwidget>
  </customwidgets>
  <resources/>

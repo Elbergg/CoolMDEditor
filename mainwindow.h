@@ -19,9 +19,9 @@ public:
 
 private slots:
     // void on_textBrowser_intoHTML();
-    void onTextChanged();
+    // void onTextChanged();
 
-    void on_actionOpen_triggered();
+    // void on_actionOpen_triggered();
 
 private:
     Ui::MainWindow *ui;

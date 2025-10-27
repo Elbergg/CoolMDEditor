@@ -1,11 +1,10 @@
 #ifndef COOLTEXTEDIT_H
 #define COOLTEXTEDIT_H
-
+# pragma once
 #include <QMainWindow>
 #include <QTextEdit>
 
-#include "CoolBlockBrowser.h"
-
+class CoolBlockBrowser;
 
 struct TextBlock {
     QString htmlVal;
@@ -24,7 +23,7 @@ class CoolTextEdit : public QTextEdit
     void highlightText(int begin, int end);
     std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
 public:
-    explicit CoolTextEdit(coolBlockBrowser* parent);
+    explicit CoolTextEdit(QWidget* parent);
     int getLineNumber();
     void refreshWidget();
     std::pair<int, int> selectEditedText(std::string&);

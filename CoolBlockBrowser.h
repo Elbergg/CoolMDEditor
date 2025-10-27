@@ -1,7 +1,7 @@
 //
 // Created by tomek on 10/27/25.
 //
-
+# pragma once
 #ifndef COOLBLOCKBROWSER_H
 #define COOLBLOCKBROWSER_H
 #include <QScrollArea>
@@ -9,7 +9,7 @@
 #include "cooltextedit.h"
 
 
-class CoolBlockBrowser : public QTextEdit{
+class CoolBlockBrowser : public QWidget{
 
 public:
 

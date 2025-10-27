@@ -3,3 +3,9 @@
 //
 
 #include "CoolBlockBrowser.h"
+
+
+CoolBlockBrowser::CoolBlockBrowser(QWidget* parent)
+    : QWidget(parent), scrollArea(nullptr), container(nullptr), containerLayout(nullptr) {
+    setupUi();
+}

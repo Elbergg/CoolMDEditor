@@ -10,14 +10,15 @@
 #include "algorithm"
 CoolTextEdit::CoolTextEdit() {}
 
-CoolTextEdit::CoolTextEdit(QWidget *parent)
-    : QTextEdit(parent)
-{
-    this->document()->setDefaultStyleSheet(
-    "p { margin: 0; padding: 0; line-height: 1.2; } "
-    "br { line-height: 1.0; }"
-);
+CoolTextEdit::CoolTextEdit(QWidget* parent)
+    : QTextEdit(parent) {
 }
+// {
+//     this->document()->setDefaultStyleSheet(
+//     "p { margin: 0; padding: 0; line-height: 1.2; } "
+//     "br { line-height: 1.0; }"
+// );
+// }
 
 int CoolTextEdit::getLineNumber(){
     QTextCursor cursor = this->textCursor();
