@@ -8,6 +8,7 @@
 #include <QTextDocument>
 #include <QTextCursor>
 #include <QLabel>
+#include <QDebug>
 #include <string>
 #include <sstream>
 #include "algorithm"
@@ -26,6 +27,10 @@ CoolTextEdit::CoolTextEdit(QWidget* parent)
 CoolTextEdit::CoolTextEdit()
     : QTextEdit(nullptr) {
     connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::adjustHeight);
+    adjustHeight();
 }
 
 

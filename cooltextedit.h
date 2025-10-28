@@ -23,6 +23,12 @@ class CoolTextEdit : public QTextEdit
     void highlightText(int begin, int end);
     std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
 public:
+    QSize sizeHint() const override {
+        int docHeight = static_cast<int>(document()->size().height());
+        QMargins margins = contentsMargins();
+        int height = docHeight + margins.top() + margins.bottom() + 10;
+        return QSize(width(), height);
+    }
     explicit CoolTextEdit(QWidget* parent);
     int getLineNumber();
     void refreshWidget();
@@ -36,6 +42,12 @@ public:
         void onTextChanged();
 
 private slots:
+    void adjustHeight() {
+    int docHeight = static_cast<int>(document()->size().height());
+    QMargins margins = contentsMargins();
+    int totalHeight = docHeight + margins.top() + margins.bottom() + 10;
+    setFixedHeight(totalHeight);
+}
     void handleTextChanged();
 };
 
