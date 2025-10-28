@@ -3,14 +3,13 @@
 # pragma once
 #include <QMainWindow>
 #include <QTextEdit>
-
-class CoolBlockBrowser;
-
 struct TextBlock {
     QString htmlVal;
     std::string mdVal;
     int start, end;
 };
+
+class CoolBlockBrowser;
 
 
 class CoolTextEdit : public QTextEdit
@@ -29,7 +28,7 @@ public:
         int height = docHeight + margins.top() + margins.bottom() + 10;
         return QSize(width(), height);
     }
-    explicit CoolTextEdit(QWidget* parent);
+    explicit CoolTextEdit(CoolBlockBrowser* parent);
     int getLineNumber();
     void refreshWidget();
     std::pair<int, int> selectEditedText(std::string&);

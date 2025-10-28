@@ -36,6 +36,8 @@ public:
         }
     }
 
+
+    void rerenderBlocks();
 private:
     QScrollArea *scrollArea;
     QWidget *container;

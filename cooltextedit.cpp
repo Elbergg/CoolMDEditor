@@ -12,9 +12,9 @@
 #include <string>
 #include <sstream>
 #include "algorithm"
-
-CoolTextEdit::CoolTextEdit(QWidget* parent)
-    : QTextEdit(parent) {
+#include "CoolBlockBrowser.h"
+CoolTextEdit::CoolTextEdit(CoolBlockBrowser* parent)
+    : QTextEdit((parent)) {
 }
 // {
 //     this->document()->setDefaultStyleSheet(
@@ -35,7 +35,7 @@ CoolTextEdit::CoolTextEdit()
 
 
 void CoolTextEdit::handleTextChanged() {
-    std::cout << "handleTextChanged" << std::endl;
+    ((CoolBlockBrowser*)parent())->rerenderBlocks();
     emit onTextChanged();
 }
 
