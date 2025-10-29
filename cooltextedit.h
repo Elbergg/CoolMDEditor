@@ -15,6 +15,8 @@ class CoolBlockBrowser;
 class CoolTextEdit : public QTextEdit
 {
     Q_OBJECT
+    CoolBlockBrowser* browser;
+
     std::string oldContent;
     std::string newContent;
     std::string refreshBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
@@ -22,6 +24,8 @@ class CoolTextEdit : public QTextEdit
     void highlightText(int begin, int end);
     std::string renderBlocks(std::vector<TextBlock>& textBlocks, int selectedBlock);
 public:
+    std::string mdVal;
+    QString htmlVal;
     QSize sizeHint() const override {
         int docHeight = static_cast<int>(document()->size().height());
         QMargins margins = contentsMargins();
@@ -29,6 +33,7 @@ public:
         return QSize(width(), height);
     }
     explicit CoolTextEdit(CoolBlockBrowser* parent);
+    CoolTextEdit(CoolBlockBrowser* parent, QString htmlVal, std::string mdVal);
     int getLineNumber();
     void refreshWidget();
     std::pair<int, int> selectEditedText(std::string&);

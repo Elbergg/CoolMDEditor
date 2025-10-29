@@ -11,11 +11,30 @@
 #include <QDebug>
 #include <string>
 #include <sstream>
+#include <utility>
 #include "algorithm"
 #include "CoolBlockBrowser.h"
 CoolTextEdit::CoolTextEdit(CoolBlockBrowser* parent)
     : QTextEdit((parent)) {
+    browser = parent;
+    connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
+    setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::adjustHeight);
+    adjustHeight();
 }
+
+CoolTextEdit::CoolTextEdit(CoolBlockBrowser* parent, QString htmlVal, std::string mdVal)
+    : CoolTextEdit((parent)) {
+    this->htmlVal = std::move(htmlVal);
+    this->mdVal = std::move(mdVal);
+    disconnect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
+    setText(QString::fromStdString(this->mdVal));
+    connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
+}
+
+
+
 // {
 //     this->document()->setDefaultStyleSheet(
 //     "p { margin: 0; padding: 0; line-height: 1.2; } "
@@ -35,7 +54,8 @@ CoolTextEdit::CoolTextEdit()
 
 
 void CoolTextEdit::handleTextChanged() {
-    ((CoolBlockBrowser*)parent())->rerenderBlocks();
+    mdVal = this->toPlainText().toStdString();
+    browser->rerenderBlocks();
     emit onTextChanged();
 }
 

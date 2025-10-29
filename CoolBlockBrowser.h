@@ -1,4 +1,4 @@
-//
+
 // Created by tomek on 10/27/25.
 //
 # pragma once
@@ -7,6 +7,7 @@
 #include <QScrollArea>
 #include <QVBoxLayout>
 #include "cooltextedit.h"
+#include "parser.h"
 
 
 class CoolBlockBrowser : public QWidget{
@@ -42,28 +43,27 @@ private:
     QScrollArea *scrollArea;
     QWidget *container;
     QVBoxLayout *containerLayout;
-    std::vector<TextBlock> textBlocks;
-
+    std::vector<CoolTextEdit* > textBlocks = {};
+    std::vector<CoolTextEdit* > textBlocksFromNarray(narrayInfo* narray);
     void setupUi() {
         QVBoxLayout *mainLayout = new QVBoxLayout(this);
         mainLayout->setContentsMargins(0, 0, 0, 0);
-        scrollArea = new QScrollArea();
+        scrollArea = new QScrollArea(this);
         scrollArea->setWidgetResizable(true);
         scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
         scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        container = new QWidget();
+        container = new QWidget(scrollArea);
         containerLayout = new QVBoxLayout(container);
         containerLayout->setAlignment(Qt::AlignTop);
         containerLayout->setSpacing(5);
         containerLayout->setContentsMargins(10, 10, 10, 10);
         scrollArea->setWidget(container);
         mainLayout->addWidget(scrollArea);
-        CoolTextEdit* cedit = new CoolTextEdit();
+        TextBlock tblock = TextBlock{"", ""};
+        CoolTextEdit* cedit = new CoolTextEdit(this);
+        textBlocks.push_back(cedit);
         insertWidget(0, cedit);
     }
 };
 
-
-
-
-#endif //COOLBLOCKBROWSER_H
+#endif COOLBLOCKBROWSER_H
