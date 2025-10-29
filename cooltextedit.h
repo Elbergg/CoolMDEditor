@@ -47,6 +47,7 @@ public:
 
 private slots:
     void adjustHeight() {
+    document()->setTextWidth(viewport()->width());
     int docHeight = static_cast<int>(document()->size().height());
     QMargins margins = contentsMargins();
     int totalHeight = docHeight + margins.top() + margins.bottom() + 10;

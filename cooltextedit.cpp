@@ -14,6 +14,7 @@
 #include <utility>
 #include "algorithm"
 #include "CoolBlockBrowser.h"
+#include <QTimer>
 CoolTextEdit::CoolTextEdit(CoolBlockBrowser* parent)
     : QTextEdit((parent)) {
     browser = parent;
@@ -31,6 +32,8 @@ CoolTextEdit::CoolTextEdit(CoolBlockBrowser* parent, QString htmlVal, std::strin
     disconnect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
     setText(QString::fromStdString(this->mdVal));
     connect(this, &QTextEdit::textChanged, this, &CoolTextEdit::handleTextChanged);
+    QTimer::singleShot(0, this, &CoolTextEdit::adjustHeight);
+
 }
 
 
